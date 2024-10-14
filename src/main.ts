@@ -1,0 +1,23 @@
+import { NestFactory } from '@nestjs/core';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  const config = new DocumentBuilder()
+    .setDescription('The Tasks API description')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      tagsSorter: 'alpha',
+      operationsSorter: function (a, b) {
+        var order = {'get': '0', 'post': '1', 'put': '2', 'delete': '3'};
+        return order[a.get("method")].localeCompare(order[b.get("method")]);
+    }
+    },
+  });
+  await app.listen(3000);
+}
+bootstrap();
